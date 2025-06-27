@@ -1,0 +1,140 @@
+﻿Query Script
+
+
+QUERIES
+1. Get the count of users who like comedy and their preferred language is Hindi
+
+
+SELECT COUNT(UserID) AS NumUsers
+FROM Users NATURAL JOIN Language_Preferences NATURAL JOIN Genre_Preference 
+WHERE Language = 'Hindi' AND Genre = 'comedy';
+
+
+
+
+2. Get the Actor details of the actor who has received the most number of awards.
+
+
+SELECT a.ActorID, a.Name, a.Birthdate, a.Relationship_status
+FROM Actors as a NATURAL JOIN Awards_Recieved
+GROUP BY a.ActorID
+ORDER BY COUNT(Award_id) DESC
+LIMIT 1;
+
+
+3.Find the advertisement displayed most number of times in the series whose CID is 3410256
+SELECT a.Category, a.AdID, a.Duration, a.No_of_times_displayed, ac.Advc_Name
+FROM Advertisement as a
+NATURAL JOIN Advertising_Company as ac
+NATURAL JOIN Content_Advertisment as ca 
+WHERE ca.CID = 3410256
+ORDER BY a.No_of_times_displayed DESC
+LIMIT 1;
+
+
+4. Find the number of VIP subscribers who have a total watch time greater than 100 hours.
+
+
+SELECT COUNT(User_ID) 
+FROM User_subscriptions AS US
+NATURAL JOIN (
+    SELECT User_ID, SUM(WatchTime) AS Total_Watch_Time
+    FROM User_Rating
+    GROUP BY User_ID
+) AS UR
+WHERE US.SubsType = 'VIP' AND UR.Total_WatchTime > 100;
+
+
+5. Find the episode number having the longest running time and has the language hindi
+
+
+SELECT Episode_no, Running_Time
+FROM Episodes
+JOIN Content ON Content.CID = Episodes.CID
+WHERE Language = 'Hindi'
+ORDER BY Episodes.Running_Time DESC
+LIMIT 1;
+
+
+6. Find the content having highest IMDB rating and produced by Flamingo production house.
+
+
+SELECT C.*
+FROM Content C
+NATURAL JOIN Production_House PH 
+WHERE PH.PHName = 'Flamingo'
+ORDER BY C.IMDBrating DESC
+LIMIT 1;
+
+
+7. Find the top 3 contents with the highest watch time by users aged between 18 to 25
+
+
+SELECT C.CID, C.Cname, SUM(UR.WatchTime) AS Total_Watch_Time
+FROM Content C
+NATURAL JOIN User_Rating UR
+NATURAL JOIN Users U
+WHERE U.Age >= 18 AND U.Age <= 25
+GROUP BY C.CID, C.Cname
+ORDER BY Total_Watch_Time DESC
+LIMIT 3;
+
+
+8.  Find the top 5 contents having the highest watch time and do not have any Award winning actor in the cast
+
+
+SELECT Content.Cname, SUM(User_Rating.WatchTime) AS Total_Watch_Time
+FROM Content
+NATURAL JOIN User_Rating 
+NATURAL JOIN Series_Actors as a
+LEFT JOIN Awards_Recieved as ar
+ON a.ActorID=ar.ActorID
+WHERE Awards_Recieved.Award_ID IS NULL
+GROUP BY Content.CID
+ORDER BY Total_Watch_Time DESC
+LIMIT 5;
+
+
+9. Find the number of Filmfare award recipients who have acted in content produced by flamingo Production House
+
+
+SELECT COUNT(DISTINCT Awards_Recieved.ActorID) AS num
+FROM Awards_Recieved
+NATURAL JOIN Series_Actors
+NATURAL JOIN Content Content.PHID = (
+    SELECT PHID FROM Production_House WHERE PHName = 'flamingo’
+)
+INNER JOIN Award ON Awards_Recieved.Award_ID = Award.Award_ID AND Award.Presented_By = 'Filmfare Awards';
+
+
+10. Find the contents having the lowest ratings by female users
+
+
+SELECT Content.CID, Content.Cname, User_Rating.WatchTime
+FROM Content
+NATURAL JOIN User_Rating
+NATURAL JOIN Users where Users.Sex = 'Female'
+ORDER BY User_Rating.WatchTime ASC
+LIMIT 10;
+
+
+11. Find the top 3 contents with the highest watch time by users aged between 5 to 15
+
+
+SELECT C.CID, C.Cname, SUM(UR.WatchTime) AS Total_Watch_Time
+FROM Content C
+NATURAL JOIN User_Rating UR
+NATURAL JOIN Users U
+WHERE U.Age >= 5 AND U.Age <= 15
+GROUP BY C.CID, C.Cname
+ORDER BY Total_Watch_Time DESC
+LIMIT 3;
+12. Find the actor who has worked in the maximum number of contents
+
+
+SELECT a.Name, COUNT(DISTINCT sa.CID) AS content_count
+FROM Actors as a
+JOIN Series_Actors as sa ON a.ActorID = sa.ActorID
+GROUP BY a.ActorID
+ORDER BY content_count DESC
+LIMIT 1;

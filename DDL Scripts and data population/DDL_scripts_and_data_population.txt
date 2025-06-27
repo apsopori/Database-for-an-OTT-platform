@@ -1,0 +1,564 @@
+﻿DDL Script
+Create Schema OTT
+Create Table Production_House(
+PHName varchar,
+PHID integer,
+Founded_in integer,
+Primary Key(PHID)
+);
+Create Table Content(
+                IMDBrating Decimal(2),
+                release_year Integer,
+                Content_type Varchar,
+                Language varchar,
+                Cname varchar,
+                CID Integer,
+                PHID Integer,
+                Primary Key(CID),
+                foreign key(PHID) references Production_House(PHID) 
+ON DELETE SET NULL ON UPDATE CASCADE
+);
+Create Table Content_Genre(
+        CID Integer,
+                Genre Varchar,
+                Primary Key(CID,Genre)
+                
+);
+ 
+Create Table Episodes (
+Episode_no Integer,
+Release_Date date,
+CID integer,
+Running_Time Numeric,
+Primary Key(Episode_no,CID),
+Foreign Key(CID) references Content(CID)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
+Create Table Users (
+UserID integer,
+User_Name varchar,
+Sex varchar,
+Primary Key(UserID)
+);
+                
+Create Table User_Rating (
+User_ID  Integer,
+CID Integer,
+Rating Numeric,
+WatchTime Numeric,
+Primary Key(User_ID, CID),
+foreign key (User_ID) references Users(UserID)
+ON UPDATE CASCADE ON DELETE CASCADE,
+foreign key (CID) references Content(CID)
+ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+Create Table Subscription_Type (
+SubsType varchar,
+Price integer,
+No_of_login_devices_allowed Integer,
+Ads_shown Boolean,
+Primary Key(SubsType)
+);
+Create Table User_subscriptions (
+UserID  Integer,
+SubsType Varchar,
+Start_date date,
+End_date date,
+Primary Key(UserID, SubsType),
+foreign key (UserID) references Users(UserID)
+ON UPDATE CASCADE ON DELETE CASCADE,
+
+foreign key (SubsType) references Subscription_Type(SubsType)
+ON UPDATE CASCADE ON DELETE SET NULL
+
+);
+ 
+ 
+ 
+ 
+ 
+Create Table Genre_Preference (
+Genre varchar,
+UserID integer,
+Primary Key(Genre, UserID),
+foreign key (UserID) references Users(UserID)
+ON UPDATE CASCADE ON DELETE CASCADE
+
+ 
+);
+Create Table Language_Preferences (
+Language varchar,
+UserId integer,
+Primary Key(Language, UserId),
+foreign key (UserID) references Users(UserID)
+ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+Create Table Actors (
+ActorID integer,
+Name varchar,
+Birthdate date,
+Relationship_status varchar,
+Primary key(ActorID)
+);
+                
+Create Table Series_Actors (
+CID Integer,
+ActorID Integer,
+Primary Key(CID,ActorID),
+foreign key (CID) references Content(CID)
+ON UPDATE CASCADE ON DELETE CASCADE,
+foreign key (ActorID) references Actors(ActorID)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
+Create Table Award (
+Presented_By varchar,
+Name varchar,
+Award_ID Integer,
+Primary Key(Award_ID)
+);
+Create Table Awards_Recieved (
+Award_ID integer,
+ActorID integer,
+Year Date,
+Primary Key(Award_ID),
+foreign key (ActorID) references Actors(ActorID)
+ON UPDATE CASCADE ON DELETE CASCADE,
+foreign key (Award_ID) references Award(Award_ID)
+ON UPDATE CASCADE ON DELETE CASCADE
+ );
+
+
+Create Table Roles_Played (
+ActorID integer,
+Roles varchar,
+Primary Key(ActorID, Roles),
+foreign key (ActorID) references Actors(ActorID)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
+Create Table Advertising_Company (
+Advc_Name Varchar,
+Advc_ID integer,
+Primary key (Advc_ID)
+);
+ Create Table Advertisement (
+Category varchar,
+AdID integer,
+Duration numeric,
+No_of_times_displayed Integer,
+Advc_ID integer,
+Primary Key(AdID),
+foreign key (Advc_ID) references Advertising_Company(Advc_ID)
+ON UPDATE CASCADE ON DELETE SET NULL
+);
+Create Table Content_Advertisment (
+CID integer,
+AdID integer,
+Primary Key (CID,AdID),
+foreign key (AdID) references Advertisement(AdID)
+ON UPDATE CASCADE ON DELETE CASCADE,
+foreign key (CID) references Content(CID)
+ON UPDATE CASCADE ON DELETE CASCADE
+ );
+
+
+
+
+INSERT Statements
+INSERT INTO ott.production_house(
+        phname, phid, founded_in)
+        VALUES ('SUNSHINE', 1264969, 2000),
+        ('ALIBABA',1232865,1983),
+        ('ANIMAL',1254961,2001),
+        ('FLAMINGO',1269696,1800),
+        ('TSERIES',1219195,1885);
+INSERT INTO ott.content(imdbrating, release_year, content_type, language, cname, cid, phid)
+VALUES (8, 2015, 'ROMANCE', 'ENGLISH', 'BANG BANG', 3410256, 1219195),
+        (8,2018,'COMEDY','HINDI','GOLMAAL AGAIN',3413421,1269696),
+        (10,2000,'ACTION','HINDI','BHAGAT SINGH',3416129,1232865),
+        (8,2008,'ACTION','HINDI','BADLAPUR',3434216,1254961),
+        (9,1985,'BIOPIC','ENGLISH','ETERNAL SUNSHINE',3454216,1264969),
+        (10,2012,'HORROR','KANNADA','KANCHANA',3454541,1232865),
+        (10,2020,'ACTION','TELEGU','KANTARA',3456341,1264969),
+        (2,1999,'COMEDY','TELEGU','KAMILA',3456414,1232865),
+        (9,2010,'COMEDY','HINDI','STREE',3456891,1269696),
+        (5,2010,'ROMANCE','TAMIL','PIHU',3458961,1269696),
+        (5,2020,'THRILLER','HINDI','MILI',3465218,1254961),
+        (10,2013,'HORROR','HINDI','OCCULUS',3465341,1269696),
+        (4,1998,'THRILLER','KANNADA','RAAVAN',3468819,1264969);
+
+
+INSERT INTO ott.episodes(
+        episode_no, release_date, cid, running_time)
+        VALUES (1, 2015, 3410256, 3),
+        (1,2018,3413421,2),
+        (1,2000,3416129,4),
+        (1,2008,3434216,3),
+        (1,1985,3454216,2),
+        (1,2012,3454541,1),
+        (1,2020,3456341,2),
+        (1,1999,3456414,3),
+        (1,2010,3456891,2),
+        (1,2010,3458961,3),
+        (1,2020,3465218,2),
+        (1,2013,3465341,3),
+        (1,1998,3468819,1),
+        (2,1999,3468819,1),
+        (3,2000,3468819,1),
+        (1,2018,3469215,3),
+        (2,2019,3469215,2),
+        (3,2020,3469215,1),
+        (1,2002,3496123,1),
+        (2,2003,3496123,1);
+INSERT INTO ott.episodes(
+        episode_no, release_date, cid, running_time)
+        VALUES (1,'2015-08-19',3410256,3),
+        (1,'2018-06-18',3413421,2),
+        (1,'2000-05-21',3416129,4),
+        (1,'2008-04-15',3434216,3),
+        (1,'1985-10-21',3454216,2),
+        (1,'2012-09-18',3454541,1),
+        (1,'2020-02-16',3456341,2),
+        (1,'1999-04-25',3456414,3),
+        (1,'2010-08-15',3456891,2),
+        (1,'2010-07-26',3458961,3),
+        (1,'2020-04-29',3465218,2),
+        (1,'2013-02-20',3465341,3),
+        (1,'1998-04-14',3468819,1),
+        (2,'1999-08-17',3468819,1),
+        (3,'2000-11-26',3468819,1),
+        (1,'2018-12-19',3469215,3),
+        (2,'2019-01-16',3469215,2),
+        (3,'2020-04-27',3469215,1),
+        (1,'2002-03-02',3496123,1),
+        (2,'2003-12-13',3496123,1);
+INSERT INTO ott.users(
+        userid, user_name, sex)
+        VALUES (6849473,'AMISH PATEL','M'),
+        (6821548,'GAURAV KUMAR','M'),
+        (6831652,'NAMRATA ARORA','F'),
+        (6821983,'RAM CHAUHAN','M'),
+        (6816752,'DEV CHAUDHARI','M'),
+        (6821358,'KAPIL SINGH','M'),
+        (6831289,'SHRUTI SHARMA','F'),
+        (6851251,'VEDAA DUTT','F'),
+        (6835497,'KAVERI VERMA','F'),
+        (6871354,'ROHAN PATEL','M'),
+        (6852896,'PANKHURI SHAH','F'),
+        (6835219,'RADHIKA SEN','F'),
+        (6812499,'RAMESH KUMAR','M'),
+        (6831987,'FREDDY RATHOD','M'),
+        (6848169,'RAMAN DUTTA','M'),
+        (6851235,'RAGHAV SINGH','M'),
+        (6821345,'KHUSHI VERMA','F'),
+        (6850018,'KALYANI SINGH','F'),
+        (6851322,'ROSHANI JOSHI','F'),
+        (6821456,'ASHOK MEHTA','M'),
+        (6838974,'AVINASH KUMAR','M'),
+        (6898653,'RAAMYA CHAUDHARI','F'),
+        (6812356,'AKSHAR GUPTA','M'),
+        (6872664,'RAJ SINGHANIA','M'),
+        (6893178,'SANAM JOSHI','M');
+INSERT INTO ott.user_rating(
+        user_id, cid, rating, watchtime)
+        VALUES (6812356,3410256,3,1),
+        (6812499,3410256,4,1),
+        (6816752,3410256,4,1),
+        (6812356,3413421,3,1),
+        (6812499,3413421,4,1),
+        (6816752,3413421,5,1),
+        (6812356,3416129,5,1),
+        (6812499,3416129,5,1),
+        (6816752,3416129,5,1),
+        (6821345,3434216,2,2),
+        (6821358,3434216,3,2),
+        (6821456,3434216,2,2),
+        (6821548,3434216,3,2),
+        (6821345,3454216,4,2),
+        (6821358,3454216,3,2),
+        (6821456,3454216,3,2),
+        (6821548,3454216,4,2),
+        (6821345,3454541,1,1),
+        (6821358,3454541,4,2),
+        (6821456,3454541,2,1),
+        (6821548,3454541,3,2),
+        (6821345,3456341,2,2),
+        (6821358,3456341,3,2),
+        (6821456,3456341,2,2),
+        (6821548,3456341,3,2),
+        
+        (6821983,3456414,4,2),
+        (6831289,3456414,1,2),
+        (6831652,3456414,5,2),
+        (6831987,3456414,3,2),
+        (6835219,3456414,2,2),
+        
+        (6821983,3456891,4,2),
+        (6831289,3456891,1,2),
+        (6831652,3456891,5,2),
+        (6831987,3456891,3,2),
+        (6835219,3456891,2,2),
+        
+        (6821983,3458961,4,2),
+        (6831289,3458961,1,2),
+        (6831652,3458961,5,2),
+        (6831987,3458961,3,2),
+        (6835219,3458961,2,2),
+        
+        (6821983,3465218,4,2),
+        (6831289,3465218,1,2),
+        (6831652,3465218,5,2),
+        (6831987,3465218,3,2),
+        (6835219,3465218,2,2),
+        
+        (6835497,3465341,3,1),
+        (6838974,3465341,4,1),
+        (6848169,3465341,2,1),
+        (6849473,3465341,5,1),
+        (6850018,3465341,4,1),
+        (6835497,3468819,3,1),
+        (6838974,3468819,4,1),
+        (6848169,3468819,2,1),
+        (6849473,3468819,5,1),
+        (6850018,3468819,4,1),
+        
+        (6835497,3496123,3,1),
+        (6838974,3496123,4,1),
+        (6848169,3496123,2,1),
+        (6849473,3496123,5,1),
+        (6850018,3496123,4,1),
+        
+        (6851235,3410256,5,1),
+        (6851251,3410256,5,1),
+        (6851322,3410256,4,1),
+        (6852896,3410256,1,1),
+        (6871354,3410256,2,1),
+        
+        (6851235,3458961,5,1),
+        (6851251,3458961,5,1),
+        (6851322,3458961,3,1),
+        (6852896,3458961,4,1),
+        (6871354,3458961,5,1);
+INSERT INTO ott.subscription_type(substype, price, no_of_login_devices_allowed, ads_shown)
+        VALUES ('NORMAL',20000,2,TRUE),
+        ('VIP',60000,5,TRUE),
+        ('VVIP',100000,8,FALSE);
+INSERT INTO ott.user_subscriptions(
+        userid, substype, start_date, end_date)
+        VALUES (6812356,'NORMAL',2020-08-16,2021-08-19),
+ (6812499,'NORMAL',2020-02-30,2021-08-12),
+ (6816752,'VIP',2018-11-01,2021-12-19),
+ (6821345,'NORMAL',2014-02-08,2021-08-19),
+ (6821358,'VIP',2011-04-29,2011-10-19),
+ (6821456,'VIP',2014-08-21,2022-02-03),
+ (6821548,'VVIP',2020-01-08,2020-11-24),
+ (6821983,'NORMAL',2016-09-21,2017-07-15),
+ (6831289,'VVIP',2010-01-02,2010-12-18),
+ (6831652,'NORMAL',2018-08-26,2019-05-14),
+ (6831987,'VIP',2020-08-04,2021-09-23),
+ (6835219,'NORMAL',2012-04-16,2020-12-30),
+ (6835497,'NORMAL',2014-08-04,2015-05-13),
+ (6838974,'VVIP',2009-08-26,2010-02-16),
+ (6848169,'VIP',2012-01-06,2012-11-13),
+ (6849473,'NORMAL',2007-08-02,2007-12-22),
+ (6850018,'VVIP',2012-01-06,2012-11-30),
+ (6851251,'NORMAL',2012-10-21,2013-05-28),
+ (6851235,'VIP',2018-08-08,2019-09-09),
+ (6851322,'VIP',2009-03-02,2009-11-15),
+ (6852896,'NORMAL',2019-10-05,2020-05-26),
+ (6871354,'NORMAL',2016-02-30,2017-06-18),
+ (6872664,'VVIP',2019-08-24,2020-06-05),
+ (6893178,'VVIP',2010-06-21,2011-02-03),
+ (6898653,'NORMAL',2018-02-24,2019-01-13);
+INSERT INTO ott.genre_preference(
+        genre, userid)
+        VALUES ('THRILLER',6812356),
+        ('COMEDY',6812356),
+        ('ACTION',6812356),
+        ('HORROR',6812499),
+        ('ROMANCE',6812499),
+        ('BIOPIC',6816752),
+        ('THRILLER',6821345),
+        ('COMEDY',6821345),
+        ('ACTION',6821358),
+        ('BIOPIC',6821456),
+        ('ACTION',6821456),
+        ('HORROR',6821456),
+        ('THRILLER',6821548),
+        ('BIOPIC',6821548),
+        ('COMEDY',6821983),
+        ('ACTION',6821983),
+        ('ROMANCE',6831289),
+        ('THRILLER',6835219),
+        ('COMEDY',6835219),
+        ('BIOPIC',6835497),
+        ('HORROR',6838974),
+        ('COMEDY',6848169),
+        ('THRILLER',6848169),
+        ('ACTION',6848169),
+        ('ACTION',6849473),
+        ('HORROR',6850018),
+        ('THRILLER',6850018),
+        ('BIOPIC',6851235),
+        ('COMEDY',6851235),
+        ('THRILLER',6851235),
+        ('HORROR',6851251),
+        ('COMEDY',6851322),
+        ('ROMANCE',6852896),
+        ('THRILLER',6871354),
+        ('ACTION',6871354),
+        ('ROMANCE',6872664),
+        ('HORROR',6893178),
+        ('THRILLER',6893178),
+        ('BIOPIC',6898653);
+INSERT INTO ott.language_preferences(
+        language, userid)
+        VALUES ('HINDI',6812356),
+        ('ENGLISH',6812356),
+        ('KANNADA',6812499),
+        ('TAMIL',6816752),
+        ('ENGLISH',6816752),
+        ('TELEGU',6821345),
+        ('HINDI',6821358),
+        ('ENGLISH',6821358),
+        ('HINDI',6821456),
+        ('TAMIL', 6821456),
+        ('TELEGU',6821456),
+        ('KANNADA',6821456),
+        ('ENGLISH',6821548),
+        ('HINDI',6821983),
+        ('ENGLISH',6821983),
+        ('HINDI',6831289),
+        ('ENGLISH',6831652),
+        ('TAMIL',6831987),
+        
+        ('TELEGU',6835219),
+        ('HINDI',6835219),
+        ('ENGLISH',6835219),
+        ('TAMIL',6835497),
+        ('TELEGU',6835497),
+        ('ENGLISH',6838974),
+        ('HINDI',6838974),
+        ('TAMIL',6849473),
+        ('ENGLISH',6850018),
+        ('HINDI',6850018),
+        ('TAMIL',6851251),
+        ('HINDI',6852896),
+        ('ENGLISH',6852896),
+        ('HINDI',6871354),
+        ('TAMIL',6872664),
+        ('TELEGU',6893178),
+        ('ENGLISH',6898653);
+INSERT INTO ott.actors(
+        actorid, name, birthdate, relationship_status)
+        VALUES (5826513,'KARISMA KUMAR','1991-08-24','SINGLE'),
+        (5861359,'SHIVAY KAPOOR','1992-03-01','MARRIED'),
+        (5831691,'OMKARA SINGH','1991-11-08','SINGLE'),
+        (5821693,'RUDRA OBEROI','1991-02-15','SINGLE'),
+        (5841695,'RAMAN AHUJA','1998-03-16','MARRIED'),
+        (5861834,'RAJIV ROONGTA','1965-04-17','MARRIED'),
+        (5831465,'SANJAY GUPTA','1961-01-27','MARRIED'),
+        (5812356,'SHARMEELA SINGH','1939-06-25','MARRIED'),
+        (5834897,'RASHMI CHAUDHARI','1940-05-21','SINGLE'),
+        (5812389,'ROSHNI KAPOOR','1985-06-20','SINGLE'),
+        (5829612,'SANAM KUMAR','1981-06-13','MARRIED'),
+        (5831456,'JAHNVI SINGH','1981-05-29','SINGLE'),
+        (5821659,'SANHVI KHAN','1986-02-13','MARRIED'),
+        (5831688,'AMANI DESAI','1991-06-14','SINGLE'),
+        (5821697,'RAJENDRA SHAH','1990-10-15','MARRIED'),
+        (5821354,'JALINDAR SINGH','1990-02-01','SINGLE'),
+        (5831968,'ROHAN PATEL','1992-05-04','MARRIED');
+INSERT INTO ott.series_actors(
+        cid, actorid)
+        VALUES (3410256,5812356),
+        (3410256,5812389),
+        (3410256,5821354),
+        (3413421,5812356),
+        (3413421,5812389),
+        (3413421,5821354),
+        (3416129,5821659),
+        (3416129,5821693),
+        (3416129,5821697),
+        (3416129,5826513),
+        (3434216,5821659),
+        (3434216,5821693),
+        (3434216,5821697),
+        (3454216,5826513),
+        (3434216,5829612),
+        (3454541,5826513),
+        (3454541,5829612),
+        (3454541,5831456),
+        (3454541,5831465),
+        (3456341,5831688),
+        (3456341,5831691),
+        (3456341,5831968),
+        (3456414,5834897),
+        (3456414,5841695),
+        (3456414,5861359),
+        (3456891,5861834),
+        (3456891,5861359),
+        (3456891,5831691),
+        (3458961,5829612),
+        (3465218,5831691),
+        (3465341,5821697),
+        (3468819,5831456),
+        (3469215,5831456),
+        (3496123,5831456);
+INSERT INTO ott.award(
+        presented_by, name, award_id)
+        VALUES ('ZEE CINE','BEST ACTOR MALE',6018561),
+        ('VIMAL','BEST ACTOR FEMALE',6035125),
+        ('STAR PLUS','COMIC ACTOR MALE',6015612),
+        ('STAR WORLD','COMIC ACTOR FEMALE',6031453),
+        ('ZEE CINE','INTERNATIONAL ICON',6041358),
+        ('FILMFARE','BEST STYLE ACTOR',6049896),
+        ('FILMFARE','BEST STYLE ACTRESS',6013897),
+        ('STARWORLD','CRITICS FAVOURITE ACTOR',6061892),
+        ('ZEE CINE','POPULAR ACTOR MALE',6081972),
+        ('STARWORLD','POPULAR ACTOR FEMALE',6045678);
+INSERT INTO ott.advertising_company(
+        advc_name, advc_id)
+        VALUES ('BRITANNIA',9123457),
+        ('MANFORCE',9134569),
+        ('EVEREST',9156789),
+        ('AMUL',9145789),
+        ('KAMASUTRA',9156234);
+INSERT INTO ott.awards_recieved(
+        award_id, actorid, year)
+        VALUES (6018561, 5821659, '2021-12-2');
+        VALUES (6031453, 5829612, '2022-16-7');
+        VALUES (6045678, 5821697, '2021-15-5');
+        VALUES (6035125, 5831456, '2023-12-8');
+INSERT INTO ott.advertisement(
+        category, adid, duration, no_of_times_displayed, advc_id)
+        VALUES ('U', 106, 10, 4, 9123457),
+         ('A', 102, 10, 3, 9134569),
+         ('A', 103, 20, 9, 9156234),
+         ('U', 104, 15, 8, 9145789),
+        ('U', 105, 10, 2, 9156789);
+INSERT INTO ott.content_advertisment(
+        cid, adid)
+        VALUES(3413421,102),
+     (3416129,103),
+     (3434216,104),
+         (3454216,105),
+         (3454541,106);
+INSERT INTO ott.content_genre(
+        cid, genre)
+        VALUES 
+        (3410256,'ROMANCE'),
+        (3413421,'COMEDY'),
+        (3416129,'ACTION'),
+        (3434216,'ACTION'),
+        (3454216,'BIOPIC'),
+        (3454541,'HORROR'),
+        (3456341,'ACTION'),
+        (3456414,'COMEDY'),
+        (3456891,'COMEDY'),
+        (3458961,'ROMANCE'),
+        (3465218,'THRILLER'),
+        (3465341,'HORROR'),
+        (3468819,'THRILLER'),
+        (3469215,'COMEDY'),
+        (3496123,'THRILLER');
